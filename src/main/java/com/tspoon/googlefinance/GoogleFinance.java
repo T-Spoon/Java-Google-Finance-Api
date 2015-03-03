@@ -75,7 +75,7 @@ public class GoogleFinance {
         InputStream is = GoogleFinance.class.getResourceAsStream("/s&p500.txt");
         String stockString = Utils.getStringFromInputStream(is);
 
-        List<String> symbols = Arrays.stream(stockString.split(",")).limit(10).collect(Collectors.toList());
+        List<String> symbols = Arrays.stream(stockString.split(",")).collect(Collectors.toList());
 
         return getStocks(symbols, from, to);
     }
