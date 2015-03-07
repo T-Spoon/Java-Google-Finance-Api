@@ -1,12 +1,14 @@
 package com.tspoon.googlefinance;
 
 import com.tspoon.googlefinance.api.Api;
+import com.tspoon.googlefinance.model.Quote;
 import com.tspoon.googlefinance.model.Stock;
 import com.tspoon.googlefinance.model.SymbolWrapper;
 import com.tspoon.googlefinance.utils.AuthInterceptor;
 import com.tspoon.googlefinance.utils.Utils;
 import org.joda.time.DateTime;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.converter.JacksonConverter;
 
 import java.io.InputStream;
@@ -54,9 +56,16 @@ public class GoogleFinance {
     }
 
     public static List<Stock> getStocks(List<String> symbols, DateTime from, DateTime to) {
-        return symbols.stream().parallel()
+        List<Stock> stocks = symbols
+                .stream()
+                .parallel()
                 .map(symbol -> getStock(symbol, from, to))
+                .filter(stock -> stock != null)
                 .collect(Collectors.toList());
+
+        processStockList(stocks);
+
+        return stocks;
     }
 
     public static Stock getStock(String symbol) {
@@ -64,7 +73,12 @@ public class GoogleFinance {
     }
 
     public static Stock getStock(String symbol, DateTime from, DateTime to) {
-        return sInstance.mApi.getStock(DATA_SOURCE, symbol, Utils.toDateString(from), Utils.toDateString(to));
+        try {
+            return sInstance.mApi.getStock(DATA_SOURCE, symbol, Utils.toDateString(from), Utils.toDateString(to));
+        } catch (RetrofitError e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static List<Stock> getSAndP500Stocks() {
@@ -78,5 +92,18 @@ public class GoogleFinance {
         List<String> symbols = Arrays.stream(stockString.split(",")).collect(Collectors.toList());
 
         return getStocks(symbols, from, to);
+    }
+
+    public static void processStockList(List<Stock> stocks) {
+        for (Stock stock : stocks) {
+            List<Quote> quotes = stock.getQuotes();
+
+            int numQuotes = quotes.size();
+            for (int i = 0; i < numQuotes - 1; i++) {
+                Quote quote = quotes.get(i);
+                Quote previousDay = quotes.get(i + 1);
+                quote.setPreviousClose(previousDay.getClose());
+            }
+        }
     }
 }
