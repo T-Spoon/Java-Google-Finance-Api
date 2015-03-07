@@ -6,8 +6,8 @@ An opinionated Java API for Google Finance data - using [Quandl], [Retrofit], [J
 #### Initialize
 ```java
 GoogleFinance.init();
-// Optionally you can initialize with your Quandl Api key to get a higher request limit
-GoogleFinance.init("QuandlApiKey");
+// Optionally you can initialize with your Quandl Api key to get a higher request limit (You can also set a log level for network requests)
+GoogleFinance.init("QuandlApiKey", RestAdapter.LogLevel.BASIC);
 ```
 #### Get Some Sweet Data
 ```java

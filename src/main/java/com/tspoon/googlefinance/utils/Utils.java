@@ -42,6 +42,10 @@ public class Utils {
         return FORMAT_DATE.print(date);
     }
 
+    public static DateTime dateFromString(String date) {
+        return FORMAT_DATE.parseDateTime(date);
+    }
+
     public static String getStringFromInputStream(InputStream is) {
 
         BufferedReader br = null;

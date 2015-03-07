@@ -13,7 +13,7 @@ public class ApiTest {
 
     @Before
     public void setUp() {
-        GoogleFinance.init(null);
+        GoogleFinance.init();
     }
 
     @Test

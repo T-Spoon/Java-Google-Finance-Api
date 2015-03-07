@@ -27,23 +27,23 @@ public class GoogleFinance {
 
     private Api mApi;
 
-    public GoogleFinance(String quandlToken) {
+    public GoogleFinance(String quandlToken, RestAdapter.LogLevel logLevel) {
         mApi = new RestAdapter.Builder()
                 .setEndpoint(ENDPOINT)
                 .setConverter(new JacksonConverter())
                 .setRequestInterceptor(new AuthInterceptor(quandlToken))
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(logLevel)
                 .build()
                 .create(Api.class);
     }
 
     public static void init() {
-        init(null);
+        init(null, RestAdapter.LogLevel.NONE);
     }
 
-    public static void init(String quandlToken) {
+    public static void init(String quandlToken, RestAdapter.LogLevel logLevel) {
         if (sInstance == null) {
-            sInstance = new GoogleFinance(quandlToken);
+            sInstance = new GoogleFinance(quandlToken, logLevel);
         }
     }
 
@@ -104,6 +104,21 @@ public class GoogleFinance {
                 Quote previousDay = quotes.get(i + 1);
                 quote.setPreviousClose(previousDay.getClose());
             }
+        }
+    }
+
+    public static enum Period {
+        EXPANSION_2009("2009-03-06", Utils.toDateString(new DateTime())),
+        CONTRACTION_2007("2007-07-13", "2009-03-06"),
+        EXPANSION_2002("2002-10-04", "2007-07-13"),
+        PAST_10_YEARS(Utils.toDateString(new DateTime().minusYears(10)), Utils.toDateString(new DateTime()));
+
+        public final DateTime dateFrom;
+        public final DateTime dateTo;
+
+        Period(String dateFrom, String dateTo) {
+            this.dateFrom = Utils.dateFromString(dateFrom);
+            this.dateTo = Utils.dateFromString(dateTo);
         }
     }
 }
