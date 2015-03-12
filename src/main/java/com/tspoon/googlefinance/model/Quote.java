@@ -27,6 +27,10 @@ public class Quote {
 
     private double prevClose;
 
+    public Quote(DateTime date) {
+        this.date = date;
+    }
+
     public Quote(DateTime date, double open, double high, double low, double close, long volume) {
         this.date = date;
         this.open = open;
@@ -70,7 +74,7 @@ public class Quote {
         return Utils.getPercent(close - open, close);
     }
 
-    public double getChangeFromOther(Quote other) {
+    public double getChangeFromPrevious(Quote other) {
         return Utils.getPercent(close - other.getClose(), close);
     }
 
