@@ -2,6 +2,7 @@ package com.tspoon.googlefinance.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.joda.time.DateTime;
 
 import java.util.Collections;
@@ -48,18 +49,23 @@ public class Stock {
     }
 
     public Quote getQuoteOn(DateTime date) {
-        Quote fake = new Quote(date);
-        int index = Collections.binarySearch(quotes, fake, new Comparator<Quote>() {
-            @Override
-            public int compare(Quote o1, Quote o2) {
-                return o2.getDate().compareTo(o1.getDate());
-            }
-        });
+        int index = getQuoteIndexOn(date);
 
         if (index >= 0) {
             return quotes.get(index);
         }
 
         return null;
+    }
+
+    public int getQuoteIndexOn(DateTime date) {
+        Quote fake = new Quote(date);
+
+        return Collections.binarySearch(quotes, fake, new Comparator<Quote>() {
+            @Override
+            public int compare(Quote o1, Quote o2) {
+                return o2.getDate().compareTo(o1.getDate());
+            }
+        });
     }
 }
